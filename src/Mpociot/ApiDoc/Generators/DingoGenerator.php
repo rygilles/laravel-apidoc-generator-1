@@ -26,6 +26,10 @@ class DingoGenerator extends AbstractGenerator
         }
 
         $routeAction = $route->getAction();
+
+	    if (is_object($response)) {
+		    $response = $response->content();
+	    }
         $routeGroup = $this->getRouteGroup($routeAction['uses']);
         $routeDescription = $this->getRouteDescription($routeAction['uses']);
 
