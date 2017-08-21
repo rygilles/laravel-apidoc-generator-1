@@ -96,6 +96,11 @@ class DingoGenerator extends AbstractGenerator
     {
         $dispatcher = app('Dingo\Api\Dispatcher')->raw();
 
+	    $server = collect([
+		    'Content-Type' => 'application/json',
+		    'Accept' => 'application/json',
+	    ])->merge($server)->toArray();
+
         collect($server)->map(function ($key, $value) use ($dispatcher) {
             $dispatcher->header($value, $key);
         });
