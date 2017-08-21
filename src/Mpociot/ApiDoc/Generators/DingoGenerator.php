@@ -45,6 +45,7 @@ class DingoGenerator extends AbstractGenerator
             'uri' => $route->uri(),
             'parameters' => [],
             'response' => $response,
+	        'bindedUri' => $this->addRouteModelBindings($route, $bindings),
         ], $routeAction, $bindings);
     }
 
