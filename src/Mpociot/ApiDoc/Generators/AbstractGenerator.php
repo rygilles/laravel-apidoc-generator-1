@@ -136,6 +136,35 @@ abstract class AbstractGenerator
             $uri = str_replace('{'.$model.'}', $id, $uri);
         }
 
+	    $routeAction = $route->getAction();
+	    $routeMethods = $route->getMethods();
+
+	    // Add GET route bindings
+	    if (in_array('GET', $routeMethods)) {
+		    $extraGetParameters = [];
+
+		    // Parse validator rules attributes
+		    $validator = \Illuminate\Support\Facades\Validator::make([], $this->getRouteRules($routeAction['uses'], $bindings));
+		    foreach ($validator->getRules() as $attribute => $rules) {
+			    if (isset($bindings[$attribute])) {
+				    $extraGetParameters[$attribute] = $bindings[$attribute];
+			    }
+		    }
+
+		    // Add additional GET parameters to the URI
+		    if (count($extraGetParameters) > 0) {
+			    $attribute_key = array_keys($extraGetParameters)[0];
+			    $attribute_value = $extraGetParameters[$attribute_key];
+			    $uri .= '?' . $attribute_key . '=' . $attribute_value;
+
+			    unset($extraGetParameters[$attribute_key]);
+
+			    foreach ($extraGetParameters as $attribute_key => $attribute_value) {
+				    $uri .= '&' . $attribute_key . '=' . $attribute_value;
+			    }
+		    }
+	    }
+
         return $uri;
     }
 
