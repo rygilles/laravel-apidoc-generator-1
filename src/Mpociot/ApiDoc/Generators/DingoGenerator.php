@@ -101,6 +101,13 @@ class DingoGenerator extends AbstractGenerator
 		    'Accept' => 'application/json',
 	    ])->merge($server)->toArray();
 
+	    $user = auth()->user();
+	    if ($user) {
+		    try {
+			    auth()->guard('api')->setUser($user);
+		    } catch (\Exception $e) {}
+	    }
+
         collect($server)->map(function ($key, $value) use ($dispatcher) {
             $dispatcher->header($value, $key);
         });
