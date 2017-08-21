@@ -18,7 +18,10 @@ class DingoGenerator extends AbstractGenerator
     {
         $response = '';
 
-        if ($withResponse) {
+	    $routeAction = $route->getAction();
+	    $routeApiDocsSettings = $this->getRouteApiDocsSettings($routeAction['uses']);
+
+	    if ($withResponse && !in_array('no_call', $routeApiDocsSettings)) {
             try {
                 $response = $this->getRouteResponse($route, $bindings, $headers);
             } catch (Exception $e) {
@@ -44,6 +47,32 @@ class DingoGenerator extends AbstractGenerator
             'response' => $response,
         ], $routeAction, $bindings);
     }
+
+	/**
+	 * Return route settings for documentation generation from route docblock
+	 *
+	 * @param  \Illuminate\Routing\Route  $route
+	 * @return string[]
+	 * @todo Other route settings in docblock ? Put settings in a config file ?
+	 */
+	protected function getRouteApiDocsSettings($route)
+	{
+		list($class, $method) = explode('@', $route);
+		$reflection = new ReflectionClass($class);
+		$reflectionMethod = $reflection->getMethod($method);
+
+		$comment = $reflectionMethod->getDocComment();
+		$phpdoc = new DocBlock($comment);
+
+		$settings = [];
+
+		// Document the route but don't make a call (prevent UPDATE, DELETE, etc.)
+		if ($phpdoc->hasTag('ApiDocsNoCall')) {
+			$settings[] = 'no_call';
+		}
+
+		return $settings;
+	}
 
     /**
      * Prepares / Disables route middlewares.
