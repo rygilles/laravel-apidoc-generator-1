@@ -67,6 +67,8 @@ class GenerateDocumentation extends Command
             $generator = new DingoGenerator();
         }
 
+        $generator->setParentCommand($this);
+
         $allowedRoutes = $this->option('routes');
         $routePrefix = $this->option('routePrefix');
         $middleware = $this->option('middleware');

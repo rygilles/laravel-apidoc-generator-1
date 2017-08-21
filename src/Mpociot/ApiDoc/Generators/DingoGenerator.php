@@ -28,6 +28,10 @@ class DingoGenerator extends AbstractGenerator
             }
         }
 
+	    if (in_array('no_call', $routeApiDocsSettings)) {
+		    $this->getParentCommand()->info('Ignore route call for ' . $routeAction['uses']);
+	    }
+
         $routeAction = $route->getAction();
 
 	    if (is_object($response)) {
@@ -112,7 +116,16 @@ class DingoGenerator extends AbstractGenerator
             $dispatcher->header($value, $key);
         });
 
-        return call_user_func_array([$dispatcher, strtolower($method)], [$uri]);
+	    $this->getParentCommand()->comment("\r\n" . 'Calling route (method="' . $method . '", "uri=' . ltrim($uri, '/') . '", parameters=["' . implode('", "', $parameters) . '"])');
+
+	    try {
+		    $resp = call_user_func_array([$dispatcher, strtolower($method)], [$uri]);
+	    } catch (\Exception $e) {
+		    // For debug purpose
+		    $this->getParentCommand()->warn('Call failed, ignore response : ' . get_class($e) . ' : '  . $e->getMessage() . "\r\n" . 'file ' . $e->getFile() . ' at line ' . $e->getLine());
+		}
+
+		return $resp;
     }
 
     /**

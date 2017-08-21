@@ -14,6 +14,33 @@ use Mpociot\ApiDoc\Parsers\RuleDescriptionParser as Description;
 
 abstract class AbstractGenerator
 {
+	/**
+	 * The parent command object
+	 *
+	 * @var Command
+	 */
+	protected $parentCommand = null;
+
+	/**
+	 * Set parent command object
+	 *
+	 * @param Command $command
+	 */
+	public function setParentCommand(Command $command)
+	{
+		$this->parentCommand = $command;
+	}
+
+	/**
+	 * Return defined parent command object
+	 *
+	 * @return Command|null
+	 */
+	public function getParentCommand()
+	{
+		return $this->parentCommand;
+	}
+
     /**
      * @param $route
      *
