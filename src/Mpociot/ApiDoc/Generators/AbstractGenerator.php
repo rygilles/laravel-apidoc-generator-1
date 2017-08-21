@@ -89,7 +89,8 @@ abstract class AbstractGenerator
                 'description' => [],
             ];
             foreach ($rules as $ruleName => $rule) {
-                $this->parseRule($rule, $attribute, $attributeData, $routeData['id']);
+
+                $this->parseRule($rule, $attribute, $attributeData, $routeData['id'] + rand(0, 1000));
             }
             $routeData['parameters'][$attribute] = $attributeData;
         }
@@ -297,6 +298,22 @@ abstract class AbstractGenerator
         list($rule, $parameters) = $parsedRule;
 
         switch ($rule) {
+	        case 'uuid':
+		        $attributeData['description'][] = Description::parse($rule)->getDescription();
+		        $attributeData['value'] = $faker->uuid;
+		        break;
+	        case 'md5':
+		        $attributeData['type'] = 'md5';
+		        $attributeData['value'] = $faker->md5;
+		        break;
+	        case 'password':
+		        $attributeData['description'][] = Description::parse($rule)->getDescription();
+		        $attributeData['value'] = $faker->password;
+		        break;
+	        case 'strength':
+		        $attributeData['description'][] = Description::parse($rule)->getDescription();
+		        $attributeData['value'] = $faker->password;
+		        break;
             case 'required':
                 $attributeData['required'] = true;
                 break;
